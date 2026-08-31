@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- Plantilla de catálogo con precio mayorista/minorista y pedido por WhatsApp.
+     Antes de publicar: editar CONFIG y PRODUCTS en la sección de JavaScript, al final del archivo. -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catálogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F6F1;
+    --surface: #FFFFFF;
+    --ink: #1C2321;
+    --ink-soft: #5B655F;
+    --line: #DBDDD3;
+    --pine: #2F5D50;
+    --pine-deep: #1E4038;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .shop { max-width: 720px; margin: 0 auto; padding: 28px 20px 110px; }
+  .shop__header { border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 18px; }
+  .shop__brand { font-family: 'Fraunces', serif; font-weight: 600; font-size: 2rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .shop__tagline { margin: 0 0 8px; color: var(--ink-soft); font-size: 0.95rem; }
+  .shop__meta { margin: 0; color: var(--ink-soft); font-size: 0.82rem; }
+
+  .shop__filters { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+  .filter-btn { background: none; border: none; font-family: inherit; font-size: 0.92rem; color: var(--ink-soft); padding: 4px 2px 10px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .filter-btn[aria-pressed="true"] { color: var(--pine-deep); border-bottom-color: var(--pine); font-weight: 500; }
+
+  .product { display: grid; grid-template-columns: 68px 1fr auto; gap: 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .product__thumb { width: 68px; height: 68px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 0.68rem; overflow: hidden; }
+  .product__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .product__brand { font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 2px; }
+  .product__name { font-size: 0.98rem; margin: 0 0 6px; font-weight: 500; }
+  .product__prices { display: flex; flex-direction: column; gap: 2px; font-size: 0.84rem; }
+  .price-wholesale { color: var(--pine-deep); }
+  .price-wholesale b { color: var(--pine-deep); }
+
+  .product__actions { display: flex; align-items: center; gap: 8px; justify-self: end; }
+  .qty-btn { width: 30px; height: 30px; border: 1px solid var(--line); background: var(--surface); font-size: 1rem; border-radius: 4px; cursor: pointer; line-height: 1; color: var(--ink); }
+  .qty-value { min-width: 18px; text-align: center; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 380px) {
+    .product { grid-template-columns: 68px 1fr; row-gap: 10px; }
+    .product__actions { grid-column: 1 / -1; justify-self: start; }
+  }
+
+  .cart__toggle { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--pine-deep); color: var(--paper); border: none; border-radius: 999px; padding: 13px 22px; font-family: inherit; font-size: 0.92rem; display: flex; gap: 10px; align-items: center; cursor: pointer; box-shadow: 0 6px 18px rgba(30,64,56,0.28); }
+  .cart__toggle[hidden] { display: none; }
+
+  .cart { position: fixed; inset: 0; background: rgba(28,35,33,0.4); display: flex; align-items: flex-end; z-index: 10; }
+  .cart[hidden] { display: none; }
+  .cart__panel { background: var(--paper); width: 100%; max-width: 480px; margin: 0 auto; border-radius: 14px 14px 0 0; padding: 22px 20px 26px; max-height: 82vh; overflow-y: auto; }
+  .cart__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .cart__head h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; margin: 0; }
+  .cart__close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--ink-soft); }
+  .cart__item { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .cart__empty { color: var(--ink-soft); font-size: 0.9rem; padding: 12px 0; }
+  .cart__total { display: flex; justify-content: space-between; font-weight: 600; padding: 14px 0; font-size: 1.05rem; }
+  .cart__field { display: block; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 16px; }
+  .cart__field input { display: block; width: 100%; margin-top: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--surface); }
+  .cart__submit { width: 100%; padding: 14px; background: var(--pine); color: white; border: none; border-radius: 8px; font-family: inherit; font-size: 0.98rem; font-weight: 500; cursor: pointer; }
+  .cart__submit:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+  .cart__submit:focus-visible, .filter-btn:focus-visible, .qty-btn:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+</style>
+</head>
+<body>
+  <div class="shop">
+    <header class="shop__header">
+      <h1 class="shop__brand" id="brandName"></h1>
+      <p class="shop__tagline" id="tagline"></p>
+      <p class="shop__meta" id="metaLine"></p>
+    </header>
+    <nav class="shop__filters" id="filters"></nav>
+    <main id="grid"></main>
+  </div>
+
+  <button class="cart__toggle" id="cartToggle" hidden>
+    <span id="cartCount">0</span> ítems · <span id="cartTotalMini">$0</span>
+  </button>
+
+  <div class="cart" id="cartOverlay" hidden>
+    <div class="cart__panel">
+      <div class="cart__head">
+        <h2>Tu pedido</h2>
+        <button class="cart__close" id="cartClose" aria-label="Cerrar">×</button>
+      </div>
+      <div id="cartItems"></div>
+      <div class="cart__total"><span>Total</span><span id="cartTotal">$0</span></div>
+      <label class="cart__field">
+        Tu nombre (para identificar el pedido)
+        <input id="customerName" type="text" placeholder="Nombre y apellido" />
+      </label>
+      <button class="cart__submit" id="sendBtn" disabled>Enviar pedido por WhatsApp</button>
+    </div>
+  </div>
+
+<script>
+// ============ CONFIGURACIÓN — editar antes de publicar ============
+const CONFIG = {
+  businessName: "Tu Negocio",
+  tagline: "Precios mayoristas y minoristas",
+  meta: "Horario y dirección (editar)",
+  whatsappNumber: "5493855550000", // AR: 54 + 9 + característica sin 0 + número sin 15
+  currency: "$",
+};
+
+// Un producto por línea. wholesale: null si no tiene precio por mayor.
+const PRODUCTS = [
+  { id: "p1", category: "Categoría A", brand: "Marca", name: "Producto de ejemplo 1", image: null,
+    retail: 5000, wholesale: { minQty: 6, price: 4200 } },
+  { id: "p2", category: "Categoría A", brand: "Marca", name: "Producto de ejemplo 2", image: null,
+    retail: 8200, wholesale: { minQty: 3, price: 7100 } },
+  { id: "p3", category: "Categoría B", brand: "Marca", name: "Producto de ejemplo 3", image: null,
+    retail: 3200, wholesale: null },
+  { id: "p4", category: "Categoría B", brand: "Marca", name: "Producto de ejemplo 4", image: null,
+    retail: 12500, wholesale: { minQty: 2, price: 10800 } },
+];
+// ====================================================================
+
+const fmt = (n) => CONFIG.currency + n.toLocaleString("es-AR");
+let activeCategory = "Todos";
+let cart = {};
+
+function unitPrice(product, qty) {
+  if (product.wholesale && qty >= product.wholesale.minQty) return product.wholesale.price;
+  return product.retail;
+}
+
+function renderHeader() {
+  document.getElementById("brandName").textContent = CONFIG.businessName;
+  document.getElementById("tagline").textContent = CONFIG.tagline;
+  document.getElementById("metaLine").textContent = CONFIG.meta;
+}
+
+function renderFilters() {
+  const cats = ["Todos", ...new Set(PRODUCTS.map(p => p.category))];
+  const nav = document.getElementById("filters");
+  nav.innerHTML = "";
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn";
+    btn.type = "button";
+    btn.textContent = cat;
+    btn.setAttribute("aria-pressed", String(cat === activeCategory));
+    btn.addEventListener("click", () => { activeCategory = cat; renderFilters(); renderProducts(); });
+    nav.appendChild(btn);
+  });
+}
+
+function renderProducts() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const list = activeCategory === "Todos" ? PRODUCTS : PRODUCTS.filter(p => p.category === activeCategory);
+
+  list.forEach(p => {
+    const qty = cart[p.id] || 0;
+    const row = document.createElement("article");
+    row.className = "product";
+    const thumbInner = p.image ? `<img src="${p.image}" alt="${p.name}">` : "sin foto";
+    const wholesaleLine = p.wholesale
+      ? `<span class="price-wholesale">Mayorista desde ${p.wholesale.minQty} u.: <b>${fmt(p.wholesale.price)}</b></span>`
+      : "";
+    row.innerHTML = `
+      <div class="product__thumb">${thumbInner}</div>
+      <div>
+        <p class="product__brand">${p.brand}</p>
+        <p class="product__name">${p.name}</p>
+        <div class="product__prices">
+          <span>Minorista ${fmt(p.retail)}</span>
+          ${wholesaleLine}
+        </div>
+      </div>
+      <div class="product__actions">
+        <button class="qty-btn" type="button" data-action="dec" data-id="${p.id}" aria-label="Restar">−</button>
+        <span class="qty-value">${qty}</span>
+        <button class="qty-btn" type="button" data-action="inc" data-id="${p.id}" aria-label="Sumar">+</button>
+      </div>
+    `;
+    grid.appendChild(row);
+  });
+
+  grid.querySelectorAll(".qty-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const current = cart[id] || 0;
+      const next = btn.dataset.action === "inc" ? current + 1 : Math.max(0, current - 1);
+      if (next === 0) delete cart[id]; else cart[id] = next;
+      renderProducts();
+      renderCart();
+    });
+  });
+}
+
+function cartLines() {
+  return Object.entries(cart).map(([id, qty]) => {
+    const product = PRODUCTS.find(p => p.id === id);
+    const price = unitPrice(product, qty);
+    return { product, qty, price, subtotal: price * qty };
+  });
+}
+
+function renderCart() {
+  const lines = cartLines();
+  const total = lines.reduce((s, l) => s + l.subtotal, 0);
+  const count = lines.reduce((s, l) => s + l.qty, 0);
+
+  document.getElementById("cartCount").textContent = count;
+  document.getElementById("cartTotalMini").textContent = fmt(total);
+  document.getElementById("cartTotal").textContent = fmt(total);
+  document.getElementById("cartToggle").hidden = count === 0;
+
+  const itemsEl = document.getElementById("cartItems");
+  itemsEl.innerHTML = lines.length
+    ? lines.map(l => `
+        <div class="cart__item">
+          <span>${l.qty} × ${l.product.name}</span>
+          <span>${fmt(l.subtotal)}</span>
+        </div>`).join("")
+    : `<p class="cart__empty">Todavía no agregaste productos.</p>`;
+
+  document.getElementById("sendBtn").disabled = count === 0;
+}
+
+function buildWhatsAppMessage() {
+  const lines = cartLines();
+  const total = lines.reduce((s, l) => s + l.subtotal, 0);
+  const name = document.getElementById("customerName").value.trim();
+  const parts = [`Pedido${name ? " de " + name : ""}:`];
+  lines.forEach(l => parts.push(`- ${l.qty} x ${l.product.name}: ${fmt(l.subtotal)}`));
+  parts.push(`Total: ${fmt(total)}`);
+  return parts.join("\n");
+}
+
+document.getElementById("cartToggle").addEventListener("click", () => {
+  document.getElementById("cartOverlay").hidden = false;
+});
+document.getElementById("cartClose").addEventListener("click", () => {
+  document.getElementById("cartOverlay").hidden = true;
+});
+document.getElementById("cartOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "cartOverlay") document.getElementById("cartOverlay").hidden = true;
+});
+document.getElementById("sendBtn").addEventListener("click", () => {
+  const text = encodeURIComponent(buildWhatsAppMessage());
+  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${text}`, "_blank");
+});
+
+renderHeader();
+renderFilters();
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>
