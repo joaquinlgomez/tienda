@@ -38,7 +38,7 @@
   .filter-btn[aria-pressed="true"] { color: var(--pine-deep); border-bottom-color: var(--pine); font-weight: 500; }
 
   .product { display: grid; grid-template-columns: 68px 1fr auto; gap: 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
-  .product__thumb { width: 68px; height: 68px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 0.68rem; overflow: hidden; }
+  .product__thumb { width: 68px; height: 68px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 0.68rem; overflow: hidden; cursor: pointer; }
   .product__thumb img { width: 100%; height: 100%; object-fit: cover; }
   .product__brand { font-size: 0.78rem; color: var(--ink-soft); margin: 0 0 2px; }
   .product__name { font-size: 0.98rem; margin: 0 0 6px; font-weight: 500; }
@@ -54,6 +54,13 @@
     .product { grid-template-columns: 68px 1fr; row-gap: 10px; }
     .product__actions { grid-column: 1 / -1; justify-self: start; }
   }
+
+  /* Estilos para el Modal de la Imagen */
+  .image-modal { position: fixed; inset: 0; background: rgba(28,35,33,0.8); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 20px; }
+  .image-modal[hidden] { display: none; }
+  .image-modal__content { position: relative; max-width: 90%; max-height: 90vh; }
+  .image-modal__content img { width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: 8px; display: block; }
+  .image-modal__close { position: absolute; top: -40px; right: 0; background: none; border: none; font-size: 2rem; color: white; cursor: pointer; }
 
   .cart__toggle { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; background: var(--pine-deep); color: var(--paper); border: none; border-radius: 999px; padding: 13px 22px; font-family: inherit; font-size: 0.92rem; display: flex; gap: 10px; align-items: center; cursor: pointer; box-shadow: 0 6px 18px rgba(30,64,56,0.28); }
   .cart__toggle[hidden] { display: none; }
@@ -85,6 +92,14 @@
     <main id="grid"></main>
   </div>
 
+  <!-- Modal para ver la imagen en grande -->
+  <div class="image-modal" id="imageModal" hidden>
+    <div class="image-modal__content">
+      <button class="image-modal__close" id="imageModalClose" aria-label="Cerrar">×</button>
+      <img id="modalImage" src="" alt="Vista ampliada">
+    </div>
+  </div>
+
   <button class="cart__toggle" id="cartToggle" hidden>
     <span id="cartCount">0</span> ítems · <span id="cartTotalMini">$0</span>
   </button>
@@ -111,11 +126,10 @@ const CONFIG = {
   businessName: "Joma",
   tagline: "Precios mayoristas y minoristas",
   meta: "Lunes a Viernes de 8:00 a 17:00",
-  whatsappNumber: "543855801006", // AR: 54 + 9 + característica sin 0 + número sin 15
+  whatsappNumber: "543855801006", 
   currency: "$",
 };
 
-// Un producto por línea. wholesale: null si no tiene precio por mayor.
 const PRODUCTS = [
   { id: "p1", category: "Categoría A", brand: "Marca", name: "Espejo circular - 50cm diámetro", image: "imagenes/espejo_circular_70cm.jpg",
     retail: 5000, wholesale: { minQty: 6, price: 4200 } },
@@ -172,7 +186,7 @@ function renderProducts() {
       ? `<span class="price-wholesale">Mayorista desde ${p.wholesale.minQty} u.: <b>${fmt(p.wholesale.price)}</b></span>`
       : "";
     row.innerHTML = `
-      <div class="product__thumb">${thumbInner}</div>
+      <div class="product__thumb" ${p.image ? `data-image="${p.image}"` : ''}>${thumbInner}</div>
       <div>
         <p class="product__brand">${p.brand}</p>
         <p class="product__name">${p.name}</p>
@@ -188,6 +202,15 @@ function renderProducts() {
       </div>
     `;
     grid.appendChild(row);
+  });
+
+  // Evento para abrir el modal de la imagen
+  grid.querySelectorAll(".product__thumb[data-image]").forEach(thumb => {
+    thumb.addEventListener("click", () => {
+      const imageUrl = thumb.dataset.image;
+      document.getElementById("modalImage").src = imageUrl;
+      document.getElementById("imageModal").hidden = false;
+    });
   });
 
   grid.querySelectorAll(".qty-btn").forEach(btn => {
@@ -241,6 +264,14 @@ function buildWhatsAppMessage() {
   parts.push(`Total: ${fmt(total)}`);
   return parts.join("\n");
 }
+
+// Controladores para cerrar el modal de imagen
+document.getElementById("imageModalClose").addEventListener("click", () => {
+  document.getElementById("imageModal").hidden = true;
+});
+document.getElementById("imageModal").addEventListener("click", (e) => {
+  if (e.target.id === "imageModal") document.getElementById("imageModal").hidden = true;
+});
 
 document.getElementById("cartToggle").addEventListener("click", () => {
   document.getElementById("cartOverlay").hidden = false;
