@@ -33,6 +33,12 @@
   .shop__brand { font-family: 'Cinzel', serif; font-weight: 700; font-size: 2rem; margin: 0 0 4px; letter-spacing: -0.01em; }
   .shop__tagline { margin: 0 0 8px; color: var(--ink-soft); font-size: 0.95rem; }
   .shop__meta { margin: 0; color: var(--ink-soft); font-size: 0.82rem; }
+  /* Estilos del logo */
+  .shop__logo {
+    height: 35px; /* <--- Cambia esto. Antes estaba en 48px. Prueba con 30px o 35px */
+    width: auto;  /* Mantener proporción */
+    object-fit: contain;
+  }   
 
   .shop__filters { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
   .filter-btn { background: none; border: none; font-family: inherit; font-size: 0.92rem; color: var(--ink-soft); padding: 4px 2px 10px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
