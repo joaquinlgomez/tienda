@@ -11,13 +11,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #F5F6F1; /*Color del fondo general de la página*/
-    --surface: #FFFFFF; /*Fondo de cuadros, botones y campos de textos*/
-    --ink: #1C2321; /*Color del texto principal y botones de cantidad*/
-    --ink-soft: #5B655F; /*Texto secundario (subtítulos, descripciones y demás)*/
-    --line: #DBDDD3; /*Colores divisorias y bordes*/
-    --pine: #2F5D50; /*Color del botón principal de "Enviar pedido"*/
-    --pine-deep: #1E4038; /*Color del botón flotante del carrto y preicos mayoristas*/
+    --paper: #121212; /*Color del fondo general de la página*/
+    --surface: #1E1E1E; /*Fondo de cuadros, botones y campos de textos*/
+    --ink: #FFFFFF; /*Color del texto principal y botones de cantidad*/
+    --ink-soft: #A0A0A0; /*Texto secundario (subtítulos, descripciones y demás)*/
+    --line: #333333; /*Colores divisorias y bordes*/
+    --pine: #25D366; /*Color del botón principal de "Enviar pedido"*/
+    --pine-deep: #128C7E; /*Color del botón flotante del carrto y preicos mayoristas*/
   }
   * { box-sizing: border-box; }
   body {
@@ -131,21 +131,21 @@ const CONFIG = {
 };
 
 const PRODUCTS = [
-  { id: "p2", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular - 120cm x 60cm - marrón", image: imagenes/espejo_120_60.jpg,
+  { id: "p2", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular - 120cm x 60cm - marrón", image: "imagenes/espejo_120_60.jpg",
     retail: 92000, wholesale: { minQty: 3, price: 80000 } },
-  { id: "p3", category: "Categoría A", brand: "Disponible", name: "Espejo cuadrado - 90cm x 90cm - negro", image: imagenes/espejo_90_90.jpg,
+  { id: "p3", category: "Categoría A", brand: "Disponible", name: "Espejo cuadrado - 90cm x 90cm - negro", image: "imagenes/espejo_90_90.jpg",
     retail: 103000, wholesale: null },
-  { id: "p4", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular- 45cm x 90cm", image: imagenes/espejo_90_45.jpg,
+  { id: "p4", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular- 45cm x 90cm", image: "imagenes/espejo_90_45.jpg",
     retail: 12500, wholesale: { minQty: 2, price: 10800 } },
-  { id: "p5", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular- 100cm x 55cm", image: imagenes/espejo_100_55.jpg,
+  { id: "p5", category: "Categoría A", brand: "Disponible", name: "Espejo rectangular- 100cm x 55cm", image: "imagenes/espejo_100_55.jpg",
     retail: 12500, wholesale: { minQty: 2, price: 10800 } },
   { id: "p1", category: "Categoría A", brand: "Disponible", name: "Espejo circular - 50cm diámetro - luz LED", image: "imagenes/espejo_circular_50cm.jpg",
     retail: 60000, wholesale: { minQty: 4, price: 52200 } },
-  { id: "p6", category: "Categoría A", brand: "Disponible", name: "Espejo circular - 60cm diámetro - luz LED", image: imagenes/espejo_circular_60cm.jpg,
+  { id: "p6", category: "Categoría A", brand: "Disponible", name: "Espejo circular - 60cm diámetro - luz LED", image: "imagenes/espejo_circular_60cm.jpg",
     retail: 70000, wholesale: { minQty: 3, price: 60900 } },
-  { id: "p7", category: "Categoría A", brand: "Disponible", name: "Espejo circular - 70cm diámetro - luz LED", image: imagenes/espejo_circular_70cm.jpg,
+  { id: "p7", category: "Categoría A", brand: "Disponible", name: "Espejo circular - 70cm diámetro - luz LED", image: "imagenes/espejo_circular_70cm.jpg",
     retail: 80000, wholesale: { minQty: 3, price: 69600 } },
-  { id: "p8", category: "Categoría A", brand: "Sin stock", name: "Espejo circular - 70cm diámetro - luz LED", image: espejo_circular_LED_70cm.jpg,
+  { id: "p8", category: "Categoría A", brand: "Sin stock", name: "Espejo circular - 70cm diámetro - luz LED", image: "espejo_circular_LED_70cm.jpg",
     retail: 80000, wholesale: { minQty: 3, price: 69600 } },
 ];
 // ====================================================================
